@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Leaderboards</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', sans-serif;
+            background: url('pictures/LeaderBoardBackground.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .leaderboard-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3);
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #FF66CC;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .back-button, .submit-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #FF66CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover, .submit-button:hover {
+            background-color: #FF3399;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #00FF99;
+        }
+
+        th {
+            background-color: #00FF99;
+            color: black;
+        }
+
+        td {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        form {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00FF99;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #00FF99;
+            border-radius: 5px;
+            background-color: #222;
+            color: white;
+        }
+
+        .proof-image {
+            display: none;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .warning-label {
+            margin-top: 10px;
+            color: #FF3399;
+            font-size: 14px;
+        }
+
+        .dropdown-container {
+            margin-top: 20px;
+        }
+
+        .dropdown-button {
+            background-color: #00FF99;
+            color: black;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .dropdown-button:hover {
+            background-color: #00CC88;
+        }
+
+        .form-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        /* Modal Styles */
+        #imageModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #imageModal img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid #fff;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <h1>Game Leaderboards</h1>
+
+        <!-- Dropdown to toggle form visibility -->
+        <div class="dropdown-container">
+            <button class="dropdown-button" id="toggleFormButton">Submit a Score</button>
+        </div>
+
+        <!-- Score Submission Form -->
+        <div class="form-container" id="formContainer">
+            <form id="scoreSubmissionForm">
+                <label for="game">Select Game:</label>
+                <select id="game" name="game" required>
+                    <option value="morpRouge">Morp Rouge</option>
+                    <option value="morphou">Morphou</option>
+                    <option value="evilMorp">Evil Morp</option>
+                    <option value="sudoku">Sudoku</option>
+                    <option value="slidingTile">Sliding Tile</option>
+                </select>
+            
+                <label for="score">Score:</label>
+                <input type="number" id="score" name="score" required min="1">
+            
+                <label for="proof">Upload Proof (Image):</label>
+                <input type="file" id="proof" name="proof" accept="image/*" required>
+                <img id="proofPreview" class="proof-image" alt="Proof Preview">
+                
+                <input type="hidden" id="proofBase64" name="proofBase64">
+            
+                <p class="warning-label">
+                    Warning: Submitting false scores may result in account deletion or a warning.
+                </p>
+            
+                <button type="submit" class="submit-button">Submit Score</button>
+            </form>
+        </div>
+
+        <!-- Leaderboard Sections -->
+        <div id="leaderboards">
+            <h2>Morp Rouge</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody id="morpRougeLeaderboard"></tbody>
+            </table>
+
+            <h2>Morphou</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody id="morphouLeaderboard"></tbody>
+            </table>
+
+            <h2>Evil Morp</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody id="evilMorpLeaderboard"></tbody>
+            </table>
+
+            <h2>Sudoku</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody id="sudokuLeaderboard"></tbody>
+            </table>
+
+            <h2>Sliding Tile</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Proof</th>
+                    </tr>
+                </thead>
+                <tbody id="slidingTileLeaderboard"></tbody>
+            </table>
+        </div>
+
+        <button class="back-button" onclick="window.location.href='Main.html'">Back to Main Menu</button>
+    </div>
+
+    <!-- Modal for Image -->
+    <div id="imageModal">
+        <img id="modalImage" src="" alt="Proof Image">
+    </div>
+
+    <script>
+        document.getElementById('proof').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('proofPreview').src = e.target.result;
+                    document.getElementById('proofPreview').style.display = 'block';
+                    document.getElementById('proofBase64').value = e.target.result; // Store Base64 in the hidden input
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('toggleFormButton').addEventListener('click', () => {
+            const formContainer = document.getElementById('formContainer');
+            formContainer.style.display =
+                formContainer.style.display === 'none' || formContainer.style.display === ''
+                    ? 'block'
+                    : 'none';
+        });
+
+        async function loadLeaderboards() {
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/leaderboard/all', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const data = await response.json();
+
+                    populateLeaderboard('morpRougeLeaderboard', data.morpRouge);
+                    populateLeaderboard('morphouLeaderboard', data.morphou);
+                    populateLeaderboard('evilMorpLeaderboard', data.evilMorp);
+                    populateLeaderboard('sudokuLeaderboard', data.sudoku);
+                    populateLeaderboard('slidingTileLeaderboard', data.slidingTile);
+                } else {
+                    alert('Failed to load leaderboards.');
+                }
+            } catch (error) {
+                console.error('Error loading leaderboards:', error);
+            }
+        }
+
+        function populateLeaderboard(tableId, scores) {
+            const tableBody = document.getElementById(tableId);
+            tableBody.innerHTML = '';
+
+            scores.forEach((score, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${score.username}</td>
+                    <td>${score.score}</td>
+                    <td>
+                        <button onclick="showImagePopup('${score.proof}')">View</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function showImagePopup(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+            modal.style.display = 'flex';
+
+            modal.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        document.getElementById('scoreSubmissionForm').onsubmit = async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const payload = {
+                game: formData.get('game'),
+                score: formData.get('score'),
+                proof: document.getElementById('proofBase64').value, // Use Base64 from hidden input
+            };
+
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/leaderboard/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Ensure the session is included
+                    body: JSON.stringify(payload),
+                });
+
+                if (response.ok) {
+                    alert('Score submitted successfully!');
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to submit score: ${error.message}`);
+                }
+            } catch (err) {
+                console.error('Error submitting score:', err);
+                alert('An error occurred while submitting the score.');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadLeaderboards);
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Morp Games</title>
+    <link rel="stylesheet" href="titleStyles.css">
+    <style>
+        body {
+            font-family: 'Press Start 2P', sans-serif; /* Retro-style font */
+            background-color: #111; /* Dark background */
+            color: #00FF99; /* Neon green text color for retro look */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .signup-login-container {
+            background-color: #222; /* Darker container background */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3); /* Neon glow effect */
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #00FF99; /* Neon green */
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00FF99, 0 0 20px #FF66CC; /* Glowing text effect */
+        }
+        .morp-image-container img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px #00FF99, 0 0 30px #FF66CC; /* Glowing effect around the image */
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+            position: relative;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00FF99;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #00FF99;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
+        }
+        .eye-icon {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            position: absolute;
+            top: 70%; /* Moved down a little */
+            right: 0; /* Moved more to the right */
+            transform: translateY(-50%);
+        }
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .login-btn, .signup-link-btn, .back-btn {
+            background-color: #FF66CC;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            font-size: 16px;
+            text-shadow: 0 0 5px #00FF99;
+        }
+        .login-btn:hover, .signup-link-btn:hover, .back-btn:hover {
+            background-color: #FF3399;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FF66CC, 0 0 20px #00FF99;
+        }
+        .back-btn, .signup-link-btn {
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Signup/Login Container -->
+    <div class="signup-login-container">
+        <h1>Morp Games</h1>
+        <div class="morp-image-container">
+            <img src="pictures/Morp_2.png" alt="Morp">
+        </div>
+
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <img src="img/eye-closed.png" alt="Toggle Password Visibility" class="eye-icon" onclick="togglePasswordVisibility('password', this)">
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="login-btn">Login</button>  
+                </div>
+                <a href="ForgetPassword.html" class="signup-link-btn">Forgot Password?</a>
+            </form>
+        </div>
+
+        <a href="Signup.html" class="signup-link-btn">Create New Account</a>
+        <a href="Main.html" class="back-btn">Back to Main Menu</a>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(fieldId, eyeIcon) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                eyeIcon.src = 'img/eye-icon.png';
+            } else {
+                field.type = 'password';
+                eyeIcon.src = 'img/eye-closed.png';
+            }
+        }
+
+        document.getElementById("login-form").onsubmit = async function (event) {
+            event.preventDefault();
+            const data = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+            };
+            try {
+                const response = await fetch("https://morpgames-0vdf.onrender.com/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                    credentials: "include",
+                });
+
+                if (response.ok) {
+                    alert("Login successful!");
+                    window.location.href = "Main.html"; // Redirect to Main.html
+                } else {
+                    const errorData = await response.json();
+                    alert(`Login failed: ${errorData.error}`);
+                }
+            } catch (err) {
+                console.error("Error during login:", err);
+                alert("An unexpected error occurred.");
+            }
+        };
+    </script>
+</body>
+</html>

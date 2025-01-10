@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - Morp Games</title>
+    <link rel="stylesheet" href="titleStyles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            background-color: #111;
+        }
+        .account-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 100px auto;
+        }
+        .account-title {
+            font-size: 48px; /* Larger size for username */
+            color: #FF66CC;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px #00FF99;
+        }
+        .account-details-title {
+            font-size: 28px;
+            color: #00FF99;
+            margin-top: 20px;
+            text-shadow: 0 0 5px #FF66CC;
+        }
+        .account-info {
+            color: #00FF99;
+            font-size: 20px;
+            margin: 20px 0;
+        }
+        .account-info span {
+            color: #FF66CC;
+        }
+        .gold-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gold-section img {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        .profile-picture-container {
+            margin: 20px auto;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #00FF99;
+            box-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .profile-picture-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-picture-container:hover {
+            transform: scale(1.5);
+            box-shadow: 0 0 20px #FF66CC, 0 0 15px #00FF99;
+        }
+        .inventory-box {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #00FF99;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .inventory-box img {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .inventory-box img:hover {
+            transform: scale(1.03);
+            border-color: #FF66CC;
+        }
+        .apply-button {
+            background-color: #00FF99;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-shadow: 0 0 5px #FF66CC;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .apply-button:hover {
+            background-color: #FF3399;
+            transform: scale(1.05);
+            text-shadow: 0 0 15px #FF66CC;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .button-group button {
+            background-color: #FF66CC;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00FF99;
+            transition: all 0.3s ease;
+        }
+        .button-group button:hover {
+            background-color: #FF3399;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #FF66CC, 0 0 10px #FF0000;
+        }
+        .logout-btn {
+            background-color: #FF0000;
+        }
+        .logout-btn:hover {
+            background-color: #CC0000;
+        }
+        .delete-account-btn {
+            background-color: #FF0000;
+        }
+        .delete-account-btn:hover {
+            background-color: #990000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <button class="signup-login-btn" onclick="window.location.href='Main.html'">Main Menu</button>
+    </div>
+
+    <!-- Account Container -->
+    <div class="account-container">
+        <!-- Username as Title -->
+        <h1 class="account-title" id="account-username">Loading...</h1>
+
+        <!-- Site Title -->
+        <h2>Account Details</h2>
+
+        <!-- Profile Picture -->
+        <div class="profile-picture-container">
+            <img id="profile-picture" src="img/Morp_2.png" alt="Profile Picture">
+        </div>
+
+        <!-- User Account Information -->
+        <div class="account-info">
+            <p>Email: <span id="email">Loading...</span></p>
+            <p class="gold-section">
+                Gold: <span id="gold">Loading...</span>
+                <img src="img/gold.png" alt="Coin">
+            </p>
+        </div>
+
+        <!-- Profile Picture Inventory -->
+        <div>
+            <h3>Profile Picture Inventory</h3>
+            <div class="inventory-box" id="profile-picture-inventory">
+                <!-- Inventory images will be loaded dynamically -->
+            </div>
+            <button class="apply-button" id="apply-button" disabled>Apply</button>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="logout-btn" id="logout-button">Logout</button>
+            <button onclick="window.location.href='ChangePassword.html'">Change Password</button>
+            <button class="delete-account-btn" id="delete-account-button">Delete Account</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedProfileImage = null;
+    
+        // Fetch account details and populate UI
+        async function fetchAccountDetails() {
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/account', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Populate account details
+                    document.getElementById('account-username').textContent = data.username || 'N/A';
+                    document.getElementById('email').textContent = data.email || 'N/A';
+                    document.getElementById('gold').textContent = data.gold || '0';
+
+                    // Set profile picture
+                    document.getElementById('profile-picture').src = data.profileImage || 'img/Morp_2.png';
+
+                    // Load inventory
+                    loadInventory(data.profilePictureInventory || []);
+                } else {
+                    alert('Failed to load account details. Please log in.');
+                    window.location.href = 'Login.html'; // Redirect to login if unauthorized
+                }
+            } catch (error) {
+                console.error('Error fetching account details:', error);
+                alert('Error loading account details.');
+                window.location.href = 'Login.html'; // Redirect to login in case of an error
+            }
+        }
+
+
+    
+        // Populate the inventory with profile pictures
+        function loadInventory(inventory) {
+            const inventoryBox = document.getElementById('profile-picture-inventory');
+            inventoryBox.innerHTML = ''; // Clear existing inventory
+
+            if (inventory.length === 0) {
+                // Show a fallback message if the inventory is empty
+                inventoryBox.innerHTML = '<p style="color: #FF66CC;">No profile pictures available in inventory.</p>';
+                return;
+            }
+
+            inventory.forEach((image) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = image;
+                imgElement.alt = 'Profile Picture';
+                imgElement.addEventListener('click', () => {
+                    selectProfileImage(imgElement, image);
+                });
+                inventoryBox.appendChild(imgElement);
+            });
+        }
+
+    
+        // Select a profile image
+        function selectProfileImage(imgElement, image) {
+            selectedProfileImage = image;
+            document.querySelectorAll('.inventory-box img').forEach((img) => {
+                img.style.borderColor = 'transparent';
+            });
+            imgElement.style.borderColor = '#FF66CC';
+            document.getElementById('apply-button').disabled = false;
+        }
+    
+        // Apply the selected profile image
+        async function applyProfileImage() {
+            if (selectedProfileImage) {
+                try {
+                    const response = await fetch('https://morpgames-0vdf.onrender.com/update-profile-picture', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ profileImage: selectedProfileImage })
+                    });
+    
+                    if (response.ok) {
+                        alert('Profile picture updated successfully!');
+                        document.getElementById('profile-picture').src = selectedProfileImage;
+                    } else {
+                        alert('Failed to update profile picture.');
+                    }
+                } catch (error) {
+                    console.error('Error updating profile picture:', error);
+                    alert('An unexpected error occurred.');
+                }
+            }
+        }
+    
+        // Logout functionality
+        async function logout() {
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+    
+                if (response.ok) {
+                    alert('Logged out successfully!');
+                    window.location.href = 'Login.html'; // Redirect to login page
+                } else {
+                    alert('Failed to log out.');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                alert('An error occurred while logging out.');
+            }
+        }
+    
+        // Delete account functionality
+        async function deleteAccount() {
+            const username = document.getElementById('account-username').textContent;
+            const confirmation = prompt(`To confirm, please type your username: ${username}`);
+    
+            if (confirmation === username) {
+                const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+                if (confirmed) {
+                    try {
+                        const response = await fetch('https://morpgames-0vdf.onrender.com/delete-account', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ username })
+                        });
+    
+                        if (response.ok) {
+                            alert('Your account has been successfully deleted.');
+                            window.location.href = 'Login.html'; // Redirect to login page
+                        } else {
+                            const errorData = await response.json();
+                            alert(`Error: ${errorData.error || 'Failed to delete account.'}`);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting account:', error);
+                        alert('An unexpected error occurred while deleting the account.');
+                    }
+                }
+            } else {
+                alert('Username confirmation does not match. Account deletion canceled.');
+            }
+        }
+    
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', fetchAccountDetails);
+        document.getElementById('apply-button').addEventListener('click', applyProfileImage);
+        document.getElementById('logout-button').addEventListener('click', logout);
+        document.getElementById('delete-account-button').addEventListener('click', deleteAccount);
+    </script>
+    
+
+</body>
+</html>

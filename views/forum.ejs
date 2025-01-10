@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forums</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none;
+            background-image: url('Pictures/LeaderBoardBackground.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: black;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-top: 20px;
+            font-size: calc(2vw + 2vh);
+        }
+
+        table {
+            width: 80%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: calc(0.8vw + 0.8vh);
+            word-wrap: break-word;
+            white-space: normal;
+            max-width: 400px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .morphou-header {
+            background-color: rgb(70, 223, 70);
+            color: white;
+            font-size: calc(1vw + 1vh);
+        }
+        .rogue-header {
+            background-color: rgba(193, 17, 216, 0.793);
+            color: white;
+            font-size: calc(1vw + 1vh);
+        }
+        .sudoku-header {
+            background-color: rgb(250, 168, 5);
+            color: white;
+            font-size: calc(1vw + 1vh);
+        }
+        .slider-header {
+            background-color: rgb(205, 13, 35);
+            color: white;
+            font-size: calc(1vw + 1vh);
+        }
+        .platformer-header {
+            background-color: rgb(13, 173, 205);
+            color: white;
+            font-size: calc(1vw + 1vh);
+        }
+        #back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: rgba(255, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #submit-btn {
+            
+            padding: 10px 20px;
+            background-color: rgba(235, 0, 235, 0.6);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        table + table {
+            margin-top: 30px;
+        }
+
+        .content-container {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .warning {
+            color: rgb(255, 255, 255);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Game Forums</h1>
+
+    <!-- Home Button -->
+    <button onclick="window.location.href='main.html';" id="back-btn">Back to Home</button>
+
+    <div class="content-container">
+
+        <!-- Post Comment Form -->
+        <form action="/post-comment" method="POST">
+            <label for="game">Choose a Game:</label>
+            <select name="game" id="game" required>
+                <option value="morphouF">Morphou</option>
+                <option value="rougeF">Morp Rogue</option>
+                <option value="sudokuF">Sudoku</option>
+                <option value="sliderF">Slider Game</option>
+                <option value="platformerF">Platformer</option>
+            </select><br><br>
+
+            <label for="name">Your Name:</label>
+            <input type="text" name="name" id="name" required maxlength="20"><br><br>
+            <div id="name-warning" class="warning" style="display: none;">Name must be 20 characters or less.</div>
+
+            <label for="comment">Your Comment:</label><br>
+            <textarea name="comment" id="comment" rows="4" cols="50" required maxlength="255"></textarea><br><br>
+            <div id="comment-warning" class="warning" style="display: none;">Comment must be 255 characters or less.</div>
+        
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn">Post Comment</button>
+        </form>
+
+        <!-- Morphou Forum Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" class="morphou-header">Morphou Forum</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% morphouF.forEach(comment => { %>
+                    <tr>
+                        <td><%= comment.name %></td>
+                        <td><%= comment.comment %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Rogue Forum Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" class="rogue-header">Rogue Forum</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% rogueF.forEach(comment => { %>
+                    <tr>
+                        <td><%= comment.name %></td>
+                        <td><%= comment.comment %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Sudoku Forum Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" class="sudoku-header">Sudoku Forum</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sudokuF.forEach(comment => { %>
+                    <tr>
+                        <td><%= comment.name %></td>
+                        <td><%= comment.comment %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Slider Forum Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" class="slider-header">Slider Forum</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sliderF.forEach(comment => { %>
+                    <tr>
+                        <td><%= comment.name %></td>
+                        <td><%= comment.comment %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Platformer Forum Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2" class="platformer-header">Platformer Forum</th>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% platformerF.forEach(comment => { %>
+                    <tr>
+                        <td><%= comment.name %></td>
+                        <td><%= comment.comment %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const nameInput = document.getElementById("name");
+        const commentInput = document.getElementById("comment");
+        const nameWarning = document.getElementById("name-warning");
+        const commentWarning = document.getElementById("comment-warning");
+        const submitBtn = document.getElementById("submit-btn");
+
+        //put/modify the limits on the name
+        nameInput.addEventListener('input', function() {
+            if (nameInput.value.length >= 20) {
+                nameWarning.style.display = 'block';
+            } else {
+                nameWarning.style.display = 'none';
+            }
+        });
+
+        // put/modify the limits of the comments
+        commentInput.addEventListener('input', function() {
+            if (commentInput.value.length >= 255) {
+                commentWarning.style.display = 'block';
+            } else {
+                commentWarning.style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>

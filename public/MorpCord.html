@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MorpCord</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            height: 100vh;
+            background-color: #111;
+            color: #00FF99;
+        }
+
+        .sidebar {
+            width: 25%;
+            background-color: #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .sidebar img {
+            width: 120px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            color: #FF66CC;
+            margin-bottom: 10px;
+        }
+
+        .channel {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #2A2A2A;
+            color: #00FF99;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .channel:hover {
+            background-color: #3A3A3A;
+        }
+
+        .channel.active {
+            background-color: #00FF99;
+            color: #111;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #151515;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background-color: #222;
+            color: #FF66CC;
+            font-size: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00FF99;
+        }
+
+        .chat-description {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #BBBBBB;
+            background-color: #222;
+            text-align: center;
+            border-bottom: 1px solid #00FF99;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            color: #00FF99;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #2A2A2A;
+            border-radius: 5px;
+        }
+
+        .message .username {
+            font-weight: bold;
+            color: #FF66CC;
+            margin-bottom: 5px;
+        }
+
+        .message .content {
+            color: #00FF99;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: #222;
+            border-top: 2px solid #00FF99;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2A2A2A;
+            color: #00FF99;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            margin-right: 10px;
+        }
+
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #FF66CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: #FF3399;
+        }
+
+        .back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #FF66CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #FF3399;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #222;
+            color: #00FF99;
+            padding: 20px;
+            border: 2px solid #FF66CC;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #FF66CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .popup button:hover {
+            background-color: #FF3399;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            margin-bottom: 20px; /* Adds space between profile and the back button */
+        }
+
+        .user-profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 2px solid #FF66CC;
+        }
+
+        .user-profile #usernameDisplay {
+            color: #00FF99;
+            font-size: 16px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="img/Morp_2.png" alt="MorpCord Logo">
+    
+        <div class="category">
+            <div class="category-title">General</div>
+            <div class="channel" onclick="loadChannel('general')" id="channel-general"># General</div>
+            <div class="channel" onclick="loadChannel('othergames')" id="channel-othergames"># Other Games</div>
+            <div class="channel" onclick="loadChannel('pets')" id="channel-pets"># Pets</div>
+            <div class="channel" onclick="loadChannel('memes')" id="channel-memes"># Memes</div>
+        </div>
+    
+        <div class="category">
+            <div class="category-title">Morp Games</div>
+            <div class="channel" onclick="loadChannel('morprouge')" id="channel-morprouge"># MorpRouge</div>
+            <div class="channel" onclick="loadChannel('morphou')" id="channel-morphou"># Morphou</div>
+            <div class="channel" onclick="loadChannel('evilmorp')" id="channel-evilmorp"># EvilMorp</div>
+            <div class="channel" onclick="loadChannel('sudoku')" id="channel-sudoku"># Sudoku</div>
+            <div class="channel" onclick="loadChannel('slidingtile')" id="channel-slidingtile"># Sliding Tile Web</div>
+        </div>
+    
+        <!-- User Profile Section -->
+        <div class="user-profile">
+            <img id="userProfilePic" src="img/Morp_2.png" alt="Profile Picture">
+            <div id="usernameDisplay">Guest</div>
+        </div>
+    
+        <button class="back-button" onclick="window.location.href='Main.html'">Back to Main Menu</button>
+    </div>
+    
+    
+
+    <div class="chat-container">
+        <div class="chat-header" id="chatHeader"># General</div>
+        <div class="chat-description" id="chatDescription">
+            A place to discuss anything general.
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="chat-input">
+            <textarea id="messageInput" placeholder="Type your message..."></textarea>
+            <button id="attachButton">+</button>
+            <span id="imageName" style="display: none;">
+                <span id="fileName"></span>
+                <button id="removeImage">X</button>
+            </span>
+            <button id="sendButton">Send</button>
+            <span id="cooldownTimer" style="margin-left: 10px; color: #FF66CC; display: none;">Wait 3s</span>
+            <input type="file" id="imageUpload" style="display: none;" accept="image/*">
+        </div>       
+    </div>
+
+    <div class="popup" id="guestPopup">
+        <p>Only registered users can send messages. Please log in to participate in the chat.</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        const chatHeader = document.getElementById('chatHeader');
+        const chatDescription = document.getElementById('chatDescription');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const guestPopup = document.getElementById('guestPopup');
+        const cooldownTimer = document.getElementById('cooldownTimer');
+        const displayedMessageIds = new Set(); // Store IDs of displayed messages
+
+        let imageBase64 = null; // Holds Base64 representation of the image
+
+        // Attach button to open file picker
+        attachButton.addEventListener('click', () => {
+            imageUpload.click();
+        });
+
+        // Handle file selection with resizing
+        imageUpload.addEventListener('change', () => {
+            const file = imageUpload.files[0];
+            if (file) {
+                if (file.size > 12 * 1024 * 1024) { // 12MB limit
+                    alert('The image is larger than 12 MB. Please select a smaller file.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const resizedImage = await resizeImage(e.target.result, 500, 500); // Resize to 500x500
+                    imageBase64 = resizedImage.split(',')[1]; // Extract Base64 without header
+                    fileName.textContent = file.name; // Display file name
+                    imageName.style.display = 'inline'; // Show image name
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove image when "X" is clicked
+        removeImage.addEventListener('click', () => {
+            imageBase64 = null; // Clear Base64 representation
+            imageUpload.value = ''; // Clear file input
+            imageName.style.display = 'none'; // Hide image name section
+        });
+
+        // Resize image function
+        async function resizeImage(base64, maxWidth, maxHeight) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Calculate aspect ratio
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxWidth || height > maxHeight) {
+                        if (width / height > maxWidth / maxHeight) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        } else {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    resolve(canvas.toDataURL('image/png')); // Return resized image as Base64
+                };
+            });
+        }
+
+        // Send message with image (if attached)
+        sendButton.addEventListener('click', () => {
+            if (messageCooldown) {
+                alert('You are sending messages too quickly. Please wait.');
+                return;
+            }
+
+            const message = messageInput.value.trim();
+
+            if (!message && !imageBase64) {
+                alert('Please enter a message or attach an image.');
+                return;
+            }
+
+            fetch('https://morpgames-0vdf.onrender.com/morpcord/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    channel: currentChannel,
+                    message,
+                    image: imageBase64,
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        console.log('Message sent successfully:', data);
+
+                        // Clear inputs and reset UI after successful send
+                        messageInput.value = '';
+                        imageBase64 = null;
+                        imageUpload.value = '';
+                        imageName.style.display = 'none';
+
+                        startMessageCooldown(); // Start the cooldown timer
+                    }
+                })
+                .catch((err) => console.error('Error sending message:', err));
+        });
+
+
+        const cooldownTime = 3; // Cooldown time in seconds
+        let currentChannel = 'general';
+        let isUserLoggedIn = false;
+        let messageCooldown = false;
+        let channelSwitchCooldown = false;
+        const lastMessageIds = {}; // Track the last message ID for each channel
+
+        // Channel descriptions
+        const channels = {
+            general: { description: "A place to discuss anything general." },
+            othergames: { description: "Talk about games other than Morp games." },
+            pets: { description: "Share stories and photos of your pets." },
+            memes: { description: "Post and enjoy your favorite memes." },
+            morprouge: { description: "Discussions and tips for MorpRouge." },
+            morphou: { description: "Share strategies and thoughts on Morphou." },
+            evilmorp: { description: "Dive into the world of EvilMorp here." },
+            sudoku: { description: "Tips and tricks for Sudoku players." },
+            slidingtile: { description: "Discussions on the Sliding Tile Web game." },
+        };
+
+        // Initialize event listeners
+        sendButton.addEventListener('click', handleMessageSend);
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleMessageSend();
+            }
+        });
+        guestPopup.querySelector('button').addEventListener('click', closePopup);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkUserLogin();
+            loadChannel(currentChannel);
+            startPolling();
+        });
+
+        // Handle sending messages
+        async function handleMessageSend() {
+            const message = messageInput.value.trim();
+            if (message) {
+                postMessageToServer(message);
+                messageInput.value = '';
+            }
+        }
+
+        // Check if the user is logged in
+        async function checkUserLogin() {
+            const profilePic = document.getElementById('userProfilePic');
+            const usernameDisplay = document.getElementById('usernameDisplay');
+
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/account', { credentials: 'include' });
+                if (response.ok) {
+                    const userData = await response.json();
+                    isUserLoggedIn = true;
+                    profilePic.src = userData.profileImage || 'img/default-profile.png';
+                    profilePic.alt = `${userData.username}'s profile picture`;
+                    usernameDisplay.textContent = userData.username || 'Guest';
+                } else {
+                    setGuestProfile(profilePic, usernameDisplay);
+                }
+            } catch (err) {
+                console.error('Error fetching user details:', err);
+                setGuestProfile(profilePic, usernameDisplay);
+            }
+        }
+
+        function setGuestProfile(profilePic, usernameDisplay) {
+            isUserLoggedIn = false;
+            profilePic.src = 'img/Morp_2.png';
+            profilePic.alt = 'Guest profile picture';
+            usernameDisplay.textContent = 'Guest';
+        }
+
+        // Load a channel with cooldown
+        async function loadChannel(channel) {
+            if (channelSwitchCooldown) {
+                showPopup('You are switching channels too quickly. Please wait!');
+                return;
+            }
+
+            if (currentChannel !== channel) {
+                console.log(`Switching to channel: ${channel}`);
+                currentChannel = channel;
+
+                // Start cooldown for switching channels
+                startChannelSwitchCooldown();
+
+                // Update UI
+                chatHeader.textContent = `# ${capitalizeFirstLetter(channel)}`;
+                chatDescription.textContent = channels[channel]?.description || '';
+                chatMessages.innerHTML = ''; // Clear current messages
+                displayedMessageIds.clear(); // Reset displayed messages for the new channel
+
+                try {
+                    await fetchMessages(channel);
+                } catch (error) {
+                    console.error(`Error fetching messages for channel ${channel}:`, error);
+                }
+
+                // Update active class
+                document.querySelectorAll('.channel').forEach(ch => ch.classList.remove('active'));
+                const channelElement = document.getElementById(`channel-${channel}`);
+                if (channelElement) channelElement.classList.add('active');
+            }
+        }
+
+
+
+        function updateChannelUI(channel) {
+            chatHeader.textContent = `# ${capitalizeFirstLetter(channel)}`;
+            chatDescription.textContent = channels[channel]?.description || '';
+            chatMessages.innerHTML = ''; // Clear messages
+            updateActiveChannel(channel);
+        }
+
+        function updateActiveChannel(channel) {
+            document.querySelectorAll('.channel').forEach(ch => ch.classList.remove('active'));
+            document.getElementById(`channel-${channel}`).classList.add('active');
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Cooldown for switching channels
+        function startChannelSwitchCooldown() {
+            channelSwitchCooldown = true;
+            setTimeout(() => (channelSwitchCooldown = false), cooldownTime * 1000);
+        }
+
+        // Fetch messages for a channel
+        async function fetchMessages(channel) {
+            console.log(`Fetching messages for channel: ${channel}`);
+            try {
+                const response = await fetch(`https://morpgames-0vdf.onrender.com/morpcord/messages/${channel}`);
+                if (response.ok) {
+                    const messages = await response.json();
+
+                    // Filter messages that are not already displayed
+                    const newMessages = messages.filter(({ _id }) => !displayedMessageIds.has(_id));
+
+                    if (newMessages.length > 0) {
+                        newMessages.forEach(({ _id, username, profileImage, message, image }) => {
+                            addMessage(username, profileImage, message, image, false);
+                            displayedMessageIds.add(_id); // Mark this message as displayed
+                        });
+                    }
+                } else {
+                    console.error(`Failed to fetch messages for channel ${channel}:`, await response.text());
+                }
+            } catch (error) {
+                console.error(`Error fetching messages for channel ${channel}:`, error);
+            }
+        }
+
+
+
+        function displayNewMessages(messages, channel) {
+            if (!lastMessageIds[channel]) lastMessageIds[channel] = '0';
+
+            const newMessages = messages.filter(({ _id }) => _id > lastMessageIds[channel]);
+            if (newMessages.length > 0) {
+                lastMessageIds[channel] = newMessages[newMessages.length - 1]._id;
+                newMessages.forEach(({ username, profileImage, message }) => {
+                    addMessage(username, profileImage, message, false);
+                });
+            }
+        }
+
+        // Add a message to the UI
+        function addMessage(username, profileImage, content, image, pushToChannel = true) {
+            const message = document.createElement('div');
+            message.classList.add('message');
+
+            // Create and add user profile image
+            const profileImg = createProfileImage(profileImage, username);
+            const usernameDiv = createUsernameDiv(username);
+            const contentDiv = createContentDiv(content);
+
+            const messageHeader = document.createElement('div');
+            messageHeader.style.display = 'flex';
+            messageHeader.style.alignItems = 'center';
+            messageHeader.appendChild(profileImg);
+            messageHeader.appendChild(usernameDiv);
+
+            message.appendChild(messageHeader);
+            message.appendChild(contentDiv);
+
+            // Add image if present
+            if (image) {
+                const imgElement = document.createElement('img');
+                imgElement.src = `data:image/png;base64,${image}`; // Assuming the image is Base64 encoded
+                imgElement.alt = 'Attached Image';
+                imgElement.style.width = '100%';
+                imgElement.style.maxWidth = '300px';
+                imgElement.style.borderRadius = '5px';
+                imgElement.style.marginTop = '10px';
+                message.appendChild(imgElement);
+            }
+
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            if (pushToChannel) postMessageToServer(content, image);
+        }
+
+
+        function createProfileImage(profileImage, username) {
+            const profileImg = document.createElement('img');
+            profileImg.src = profileImage || 'img/default-profile.png';
+            profileImg.alt = `${username}'s profile picture`;
+            profileImg.style.width = '32px';
+            profileImg.style.height = '32px';
+            profileImg.style.borderRadius = '50%';
+            profileImg.style.marginRight = '10px';
+            return profileImg;
+        }
+
+        function createUsernameDiv(username) {
+            const usernameDiv = document.createElement('div');
+            usernameDiv.classList.add('username');
+            usernameDiv.textContent = username;
+            return usernameDiv;
+        }
+
+        function createContentDiv(content) {
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('content');
+            contentDiv.textContent = content;
+            return contentDiv;
+        }
+
+        // Post a message with cooldown
+        async function postMessageToServer(message) {
+            if (!isUserLoggedIn) {
+                showPopup('Only registered users can send messages.');
+                return;
+            }
+
+            if (messageCooldown) {
+                showPopup('You are sending messages too quickly. Please wait!');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://morpgames-0vdf.onrender.com/morpcord/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ channel: currentChannel, message }),
+                });
+
+                if (response.ok) {
+                    await fetchMessages(currentChannel); // Fetch new messages immediately
+                    startMessageCooldown();
+                } else {
+                    console.error('Failed to send message:', await response.text());
+                }
+            } catch (err) {
+                console.error('Error sending message:', err);
+            }
+        }
+
+        // Cooldown for sending messages
+        function startMessageCooldown() {
+            messageCooldown = true;
+
+            // Optional: Display cooldown feedback in UI
+            cooldownTimer.style.display = 'inline';
+            cooldownTimer.textContent = `Wait ${cooldownTime}s`;
+
+            let remainingTime = cooldownTime;
+            const interval = setInterval(() => {
+                remainingTime--;
+                if (remainingTime > 0) {
+                    cooldownTimer.textContent = `Wait ${remainingTime}s`;
+                } else {
+                    clearInterval(interval);
+                    cooldownTimer.style.display = 'none';
+                    messageCooldown = false;
+                }
+            }, 1000);
+        }
+
+
+        // Start polling for new messages
+        function startPolling() {
+            setInterval(() => {
+                fetchMessages(currentChannel); // Poll only for new messages
+            }, 3000); // Poll every 3 seconds
+        }
+
+        // Show a popup
+        function showPopup(message) {
+            guestPopup.style.display = 'block';
+            guestPopup.querySelector('p').textContent = message;
+        }
+
+        // Close popup
+        function closePopup() {
+            guestPopup.style.display = 'none';
+        }
+
+        
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Puzzle Game</title>
+    <link rel="stylesheet" href="STG Style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        #back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .gold-container {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00FF99;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .gold-container img {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <a id="back-button" href="../Main.html">Back to Main</a>
+    <div class="gold-container" id="gold-container" style="display: none;">
+        <span id="gold-amount">0</span>
+        <img src="gold.png" alt="Gold">
+    </div>
+    <div id="content-box">
+        <div id="menu">
+            <h1>Sliding Puzzle Game</h1>
+            <div>
+                <label for="width-input">Width (3-13):</label>
+                <input type="number" id="width-input" min="3" max="13" value="3">
+            </div>
+            <div>
+                <label for="height-input">Height (3-13):</label>
+                <input type="number" id="height-input" min="3" max="13" value="3">
+            </div>
+            <button id="start-button">Start Game</button>
+            <button id="leaderboard-button">Show Leaderboard</button>
+            <button id="tracklisting-button">Show Tracklisting</button>
+        </div>
+        <div id="game-container" style="display: none;">
+            <h1>Sliding Puzzle Game</h1>
+            <div id="board"></div>
+            <button id="scramble-button">Scramble</button>
+            <button id="submit-score-button">Submit Score</button>
+            <button id="return-button-1">Return</button>
+            <div id="win-message"></div>
+            <div id="move-counter">Moves: 0</div>
+            <div id="timer">Time Elapsed: 00:00.000</div>
+        </div>
+        <div id="tracklisting" style="display: none;">
+            <h2>Tracklisting & Sources</h2>
+            <ul>
+				<li><a href="https://www.youtube.com/watch?v=N5UFEESbLUQ">"""sweet dreams but i put kahoot music over it" but i fixed the tempo" but i reuploaded it ages later"</a> - Geek, SupaSimon, zacj, Kahoot!, and Eurythmics</li>
+				<li><a href="https://www.youtube.com/watch?v=XDd9Yb0JvjE">"Kahoot! OST - One-Winged Angel"</a> - Choinkus, Kahoot, and Nobuo Uematsu</li>
+				<li><a href="https://www.youtube.com/watch?v=z54MpfR3XE4">"James Shimoji - Pepsi Man Theme Song (ORIGINAL)"</a> - JAMES SHIMOJI (James & Gang)</li>
+				<li><a href="https://www.youtube.com/watch?v=w4vMRPeEMLs">"Roy's Smooth Sounds (SIDE A)"</a> - BotanicSage [BS], Prettyboy Floyd, Chip the Ripper, Ollie King, Koji Kondo, Shiho Fujii, Ryo Nagamatsu, Kenta Nagata, Yuichi Iwasa, Eisaku Sato, Futoshi Shirai, and Nelly</li>
+				<li><a href="https://www.youtube.com/watch?v=85VQEzwzAvE">"SPEED OF HELL"</a> - Xero, Mittsies, and Tech N9ne</li>
+				<li><a href="https://www.youtube.com/watch?v=EP-9dDxHif4">"Dante's Army</a> - Tomoki Miyoshi</li>
+				<li><a href="https://www.youtube.com/watch?v=Nq2AVa1ixz8">"064 - Temporal Tower - (Pokemon Mystery Dungeon - Explorers of Sky)"</a> - Arata Iiyoshi, Hideki Sakamoto, Keisuke Ito, Ryoma Nakamura, and Kenichi Saito</li>
+				<li><a href="https://www.youtube.com/watch?v=zfL5NoUMvbU">"Mega Man: Powered Up - Time Man"</a> - Toshihiko Horiyama</li>
+				<li><a href="https://www.youtube.com/watch?v=hzGmbwS_Drs">"Rolling Down the Street, In my Katamari"</a> - Fearofdark</li>
+				<li><a href="https://www.youtube.com/watch?v=00vYncpl0pk">"Surfing on a Sine Wave"</a> - Fearofdark</li>
+            </ul>
+            <br>
+            <button id="return-button-2">Return</button>
+        </div>
+        <br>
+        <audio id="background-music" controls></audio>
+    </div>
+    <script>
+        const goldContainer = document.getElementById('gold-container');
+        const goldAmountElement = document.getElementById('gold-amount');
+        let gold = 0;
+
+        async function fetchUserGold() {
+            try {
+                const response = await fetch('https://morpgames.onrender.com/user', {
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    gold = data.gold || 0;
+                    goldContainer.style.display = 'flex';
+                    goldAmountElement.textContent = gold;
+                } else {
+                    goldContainer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching user gold:', error);
+                goldContainer.style.display = 'none';
+            }
+        }
+
+        async function addGold() {
+            try {
+                await fetch('https://morpgames.onrender.com/add-gold', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ amount: 25 }),
+                });
+                await fetchUserGold();
+            } catch (error) {
+                console.error('Error adding gold:', error);
+            }
+        }
+
+        // Add gold every minute
+        setInterval(() => {
+            addGold();
+        }, 60000);
+
+        // Initialize gold on page load
+        document.addEventListener('DOMContentLoaded', fetchUserGold);
+
+        // Add your other game-related JavaScript code here...
+    </script>
+    <script src="STG Script.js"></script>
+</body>
+</html>

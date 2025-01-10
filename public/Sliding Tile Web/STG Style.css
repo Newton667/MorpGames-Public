@@ -1,0 +1,87 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body::before {
+    content:"";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.35);
+    z-index: -1;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    background-image: url("https://img.freepik.com/premium-photo/green-red-squares-pixels-seamless-pattern-background_118124-92600.jpg");
+}
+
+#content-box {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+}
+
+#tracklisting {
+    width: 100%; /* Make it wider */
+    text-align: left; /* Ensure text inside is aligned to the left */
+    padding: 20px; /* Add some padding for better readability */
+    background-color: white; /* Keep it consistent with other sections */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+#game-container {
+    text-align: center;
+    overflow: auto; /* Allow scrolling if the board is too large */
+    max-width: 90vw; /* Limit the board width to the viewport */
+    max-height: 90vh; /* Limit the board height to the viewport */
+    margin: 0 auto; /* Center the container */
+}
+
+#board {
+    display: grid;
+    gap: 5px;
+    margin: 20px auto;
+    background-color: #333;
+    height: fit-content;
+    width: fit-content;
+  /* The grid-template-columns is set dynamically in JS */
+}
+
+.tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #fff;
+    background-color: #4caf50;
+    width: 50px; /* Fixed width */
+    height: 50px; /* Fixed height */
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.blank {
+    background-color: #555;
+}
+
+.tile.correct {
+    background-color: #4caf50; /* Green for correct */
+}
+
+.tile.incorrect {
+    background-color: #e54848; /* Softer red for incorrect */
+}
